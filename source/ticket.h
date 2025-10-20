@@ -1,0 +1,1 @@
+s32 get_title_ticket(char *ticket_buffer, u64 id);
