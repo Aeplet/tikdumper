@@ -1,9 +1,10 @@
-#define VERSION "v1.0.0"
 #define DUMP_FOLDER "/tikdumper"
 
 #define TITLE_UPPER(x)		((u32)((x) >> 32))
 #define TITLE_LOWER(x)		((u32)(x))
 #define TITLE_ID(x,y)		(((u64)(x) << 32) | (y))
+
+#define MAX_IOS_ERROR_MESSAGE_SIZE 100
 
 #define MEM_PROT                    (MEM_REG_BASE + 0x20a)
 #define MEM_REG_BASE                0xd8b4000

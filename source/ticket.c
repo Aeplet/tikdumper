@@ -5,6 +5,7 @@
 #include <malloc.h>
 
 #include "globals.h"
+#include "ios_errors.h"
 
 s32 get_title_ticket(char *ticket_buffer, u64 id) {
     char file_path[256];
@@ -14,7 +15,11 @@ s32 get_title_ticket(char *ticket_buffer, u64 id) {
     int fd = IOS_Open(file_path, 1);
     if (fd < 0) {
         IOS_Close(fd);
-        printf("Failed to read ticket for title %016llx: IOS_Open(file_path, 1) returned %d\n", id, fd);
+
+        char error_message[MAX_IOS_ERROR_MESSAGE_SIZE];
+        get_ios_error_message(error_message, fd);
+
+        printf("Failed to read ticket for title %016llx: \n%s\n", id, error_message);
         return 0; // file probably does not exist
     }
 

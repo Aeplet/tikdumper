@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 	// e.g. printf ("\x1b[%d;%dH", row, column );
 	printf("\x1b[2;0H");
 
-	printf("tikdumper %s\n", VERSION);
+	printf("tikdumper %s\n", APP_VERSION);
     printf("Created by Aep\n\n");
 
 	bool device_mounted = mount_device();
