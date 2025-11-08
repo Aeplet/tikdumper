@@ -13,3 +13,10 @@
 
 #define TICKET_SIZE 0x2A4
 #define TICKET_ALLOC (TICKET_SIZE + 0x20)
+
+typedef enum {
+    SD_CARD,
+    USB_STORAGE,
+    SDGECKO_A,
+    SDGECKO_B,
+} storage_device_t;

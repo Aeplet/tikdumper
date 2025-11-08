@@ -1,3 +1,4 @@
+// this entire app's code needs to be cleaned up. ill do it eventually i promise
 #include <stdio.h>
 #include <stdlib.h>
 #include <gccore.h>
@@ -7,6 +8,7 @@
 #include "ios.h"
 #include "dump.h"
 #include "storage.h"
+#include "menu.h"
 
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
@@ -68,20 +70,10 @@ int main(int argc, char **argv) {
 	// This positions the cursor on row 2, column 0
 	// we can use variables for this with format codes too
 	// e.g. printf ("\x1b[%d;%dH", row, column );
-	printf("\x1b[2;0H");
+	void full_screen_reset();
 
-	printf("tikdumper %s\n", APP_VERSION);
-    printf("Created by Aep\n\n");
-
-	bool device_mounted = mount_device();
-
-	if (!device_mounted) {
-		printf("\nFailed to mount storage device! Please insert an SD Card or\nUSB drive, then run this application again.\n\n");
-	}
-	else {
-		printf("Press A to start dumping tickets\n");
-	}
-    printf("Press HOME/START to exit\n");
+	bool device_mounted = false; // This is updated later
+	init_device();
 
 	while(1) {
 
@@ -111,6 +103,24 @@ int main(int argc, char **argv) {
 			can_exit = true;
 			printf("Press HOME/START to exit\n");
         }
+		// A can mean 2 things now: Start dump or Select device
+		else if (!device_mounted && (pressed & WPAD_BUTTON_A || pressed_gc & PAD_BUTTON_A)) {
+			bool mounted_device = mount_device();
+			if (mounted_device) {
+				device_mounted = true;
+				printf("Successfully mounted device!\n\n");
+				printf("Press A to start dumping tickets\n");
+			}
+		}
+
+		// Pressing Left/Right to switch storage devices
+		if (pressed & WPAD_BUTTON_RIGHT || pressed_gc & PAD_BUTTON_RIGHT) {
+			move_left_right(1);
+		}
+
+		if (pressed & WPAD_BUTTON_LEFT || pressed_gc & PAD_BUTTON_LEFT) {
+			move_left_right(0);
+		}
 
 		// Wait for the next frame
 		VIDEO_WaitVSync();

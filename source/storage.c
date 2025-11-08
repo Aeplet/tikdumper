@@ -1,14 +1,67 @@
 #include <gccore.h>
 #include <stdio.h>
 #include <sdcard/wiisd_io.h>
+#include <sdcard/gcsd.h>
 #include <fat.h>
 #include <string.h>
 
-// TODO: SWITCH TO A USER PROMPT INSTEAD OF DOING SD THEN USB
-// Try to mount SD card first
-// Bit messy.
-char device[4];
+#include "globals.h"
+#include "menu.h"
 
+char device[8];
+storage_device_t device_t;
+
+void init_device() {
+	device_select_menu();
+}
+
+bool mount_device() {
+	switch (get_device_menu_selection()) {
+		case SD_CARD:
+			__io_wiisd.startup();
+			if (__io_wiisd.isInserted() == 0 || fatMountSimple ("sd", &__io_wiisd) == 0) {
+				__io_wiisd.shutdown();
+				printf("Failed to mount storage device!\n");
+				return false;
+			}
+			break;
+		case USB_STORAGE:
+			__io_usbstorage.startup();
+			if (__io_usbstorage.isInserted() == 0 || fatMountSimple ("fat", &__io_usbstorage) == 0) {
+				__io_usbstorage.shutdown();
+				printf("Failed to mount storage device!\n");
+				return false;
+			}
+			break;
+		case SDGECKO_A:
+			__io_gcsda.startup();
+			if (__io_gcsda.isInserted() == 0 || fatMountSimple ("sda", &__io_gcsda) == 0) {
+				__io_gcsda.shutdown();
+				printf("Failed to mount storage device!\n");
+				return false;
+			}
+			break;
+		case SDGECKO_B:
+			__io_gcsdb.startup();
+			if (__io_gcsdb.isInserted() == 0 || fatMountSimple ("sdb", &__io_gcsdb) == 0) {
+				__io_gcsdb.shutdown();
+				printf("Failed to mount storage device!\n");
+				return false;
+			}
+			break;
+		default:
+			printf("What is this unknown device? Please report on the GitHub issues page if you managed to get this error.");
+			break;
+	}
+	return true;
+	// if none errored then we're good
+}
+
+void get_storage_device(char *passed_device) {
+    snprintf(passed_device, sizeof(device), device);
+}
+
+/* Archived code
 bool mount_device() {
 	__io_wiisd.startup();
 	if (__io_wiisd.isInserted() == 0 || fatMountSimple ("sd", &__io_wiisd) == 0) {
@@ -33,8 +86,4 @@ bool mount_device() {
         return true;
 	}
     return false;
-}
-
-void get_storage_device(char *passed_device) {
-    strcpy(passed_device, device);
-}
+}*/
